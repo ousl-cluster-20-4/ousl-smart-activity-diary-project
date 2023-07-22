@@ -1,0 +1,1 @@
+# ousl-smart-activity-diary-project
