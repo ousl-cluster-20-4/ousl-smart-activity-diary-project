@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
             databaseHelper.addColor(7, "CAT", getResources().getColor(R.color.CAT));
             databaseHelper.addColor(8, "FINAL", getResources().getColor(R.color.FINAL));
         }
+        colorCursor.close();
     }
 
     public void fingerPrint() {
@@ -185,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
     protected void goSplash() {
         Intent splash = new Intent(this, SplashActivity.class);
         startActivity(splash);
+        finish();
     }
 
     //When try to back from starting screen this method will execute

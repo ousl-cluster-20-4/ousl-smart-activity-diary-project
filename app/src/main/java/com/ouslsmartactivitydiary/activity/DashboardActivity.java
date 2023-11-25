@@ -196,9 +196,14 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    finishAffinity();
-                    onStop();
-                    onDestroy();
+                    // Delay the execution using Handler
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                            onStop();
+                        }
+                    }, 100);
                 }
             });
 

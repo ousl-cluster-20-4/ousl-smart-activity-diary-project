@@ -57,6 +57,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MyCalendarFragment extends Fragment implements CalendarAdapter.AdapterCallback {
 
@@ -302,15 +303,33 @@ public class MyCalendarFragment extends Fragment implements CalendarAdapter.Adap
                                 if (cursor.moveToFirst()) {
                                     addList(documentChange);
                                     type = "ADDED";
+                                    if (isFirstRun) {
+                                        isFirstRun = false;  // Set the flag to false so that the method won't be called again
+                                        checkType();
+                                    }
                                 }
+                                if (Objects.equals(documentChange.getDocument().getString("courseCode"), "ALL")) {
+                                    fetchDataFromDocument(documentChange);
+                                    addList(documentChange);
+                                    type = "ADDED";
+                                    if (isFirstRun) {
+                                        isFirstRun = false;  // Set the flag to false so that the method won't be called again
+                                        checkType();
+                                    }
+                                }
+
                             } else if (documentChange.getType() == DocumentChange.Type.MODIFIED) {
                                 for (int i=0; i<activityItemList.size(); i++) {
                                     if (activityItemList.get(i).getId().equals(documentChange.getDocument().getId())){
                                         isFound = true;
+                                        fetchDataFromDocument(documentChange);
                                         updateList(documentChange, i);
                                         changes++;
-                                        fetchDataFromDocument(documentChange);
                                         type = "MODIFIED";
+                                        if (isFirstRun) {
+                                            isFirstRun = false;  // Set the flag to false so that the method won't be called again
+                                            checkType();
+                                        }
                                     }
 
                                     // add activity only if not fount in the Array list, but in the firebase
@@ -320,6 +339,11 @@ public class MyCalendarFragment extends Fragment implements CalendarAdapter.Adap
                                         addList(documentChange);
                                         changes++;
                                         type = "ADDED";
+                                        fetchDataFromDocument(documentChange);
+                                        if (isFirstRun) {
+                                            isFirstRun = false;  // Set the flag to false so that the method won't be called again
+                                            checkType();
+                                        }
                                         break;
                                     }
                                 }
@@ -332,6 +356,10 @@ public class MyCalendarFragment extends Fragment implements CalendarAdapter.Adap
                                             fetchDataFromDocument(documentChange);
                                             changes++;
                                             type = "REMOVED";
+                                            if (isFirstRun) {
+                                                isFirstRun = false;  // Set the flag to false so that the method won't be called again
+                                                checkType();
+                                            }
                                             break;
                                         }
                                     }
@@ -351,11 +379,6 @@ public class MyCalendarFragment extends Fragment implements CalendarAdapter.Adap
                         calendarSundayAdapter.notifyDataSetChanged();
 
                         calendarAdapter.notifyDataSetChanged();
-
-                        if (isFirstRun) {
-                            isFirstRun = false;  // Set the flag to false so that the method won't be called again
-                            checkType();
-                        }
                     }
                 });
     }
@@ -466,76 +489,87 @@ public class MyCalendarFragment extends Fragment implements CalendarAdapter.Adap
                 do {
                     if (cursor.getString(1).equals(documentSnapshot.getString("courseCode"))){
 
-                        datePart = documentSnapshot.getDate(fieldName).toString().split(" ");
-
-                        if ((documentSnapshot.getDate(fieldName).compareTo(weekStartDate)>=0 ||
-                                (datePart[1]+datePart[2]+datePart[5]).equals(weekStartParts[1]+weekStartParts[2]+weekStartParts[5])) &&
-                                (documentSnapshot.getDate(fieldName).compareTo(weekEndDate)<=0 ||
-                                        (datePart[1]+datePart[2]+datePart[5]).equals(weekEndParts[1]+weekEndParts[2]+weekEndParts[5]))) {
-
-                            category = documentSnapshot.getString("category");
-                            switch (category) {
-                                case "LAB":
-                                    icon = R.drawable.ic_labtest_2;
-                                    break;
-                                case "TMA":
-                                    icon = R.drawable.ic_assignment_2;
-                                    break;
-                                case "DS":
-                                    icon = R.drawable.ic_ds_2;
-                                    break;
-                                case "PS":
-                                    icon = R.drawable.ic_ps_2;
-                                    break;
-                                case "CAT":
-                                    icon = R.drawable.ic_cat_2;
-                                    break;
-                                case "FINAL":
-                                    icon = R.drawable.ic_final_2;
-                                    break;
-                                case "VIVA":
-                                    icon = R.drawable.ic_viva_2;
-                                    break;
-                                case "QUIZ":
-                                    icon = R.drawable.ic_quiz_2;
-                                    break;
-                                default:
-                                    icon = R.drawable.ic_error_2;
-                                    break;
-                            }
-                            switch (datePart[0]) {
-                                case "Mon":
-                                    calendarIconList.add(new CalendarItem(11, documentSnapshot.getId(), icon));
-                                    break;
-                                case "Tue":
-                                    calendarIconList.add(new CalendarItem(22, documentSnapshot.getId(), icon));
-                                    break;
-                                case "Wed":
-                                    calendarIconList.add(new CalendarItem(33, documentSnapshot.getId(), icon));
-                                    break;
-                                case "Thu":
-                                    calendarIconList.add(new CalendarItem(44, documentSnapshot.getId(), icon));
-                                    break;
-                                case "Fri":
-                                    calendarIconList.add(new CalendarItem(55, documentSnapshot.getId(), icon));
-                                    break;
-                                case "Sat":
-                                    calendarIconList.add(new CalendarItem(66, documentSnapshot.getId(), icon));
-                                    break;
-                                case "Sun":
-                                    calendarIconList.add(new CalendarItem(77, documentSnapshot.getId(), icon));
-                                    break;
-                            }
-
-                        }
+                        // check the course name and add icons to the weekly calendar
+                        checkCourse(documentSnapshot);
 
                     }
                 } while (cursor.moveToNext());
             }
             cursor.moveToFirst();
 
+            if (documentSnapshot.getString("courseCode").equals("ALL")) {
+
+                // check the course name and add icons to the weekly calendar
+                checkCourse(documentSnapshot);
+            }
+
         }
         categorizeCalendarIcons();
+    }
+
+    public void checkCourse(DocumentSnapshot documentSnapshot) {
+        datePart = documentSnapshot.getDate(fieldName).toString().split(" ");
+
+        if ((documentSnapshot.getDate(fieldName).compareTo(weekStartDate)>=0 ||
+                (datePart[1]+datePart[2]+datePart[5]).equals(weekStartParts[1]+weekStartParts[2]+weekStartParts[5])) &&
+                (documentSnapshot.getDate(fieldName).compareTo(weekEndDate)<=0 ||
+                        (datePart[1]+datePart[2]+datePart[5]).equals(weekEndParts[1]+weekEndParts[2]+weekEndParts[5]))) {
+
+            category = documentSnapshot.getString("category");
+            switch (category) {
+                case "LAB":
+                    icon = R.drawable.ic_labtest_2;
+                    break;
+                case "TMA":
+                    icon = R.drawable.ic_assignment_2;
+                    break;
+                case "DS":
+                    icon = R.drawable.ic_ds_2;
+                    break;
+                case "PS":
+                    icon = R.drawable.ic_ps_2;
+                    break;
+                case "CAT":
+                    icon = R.drawable.ic_cat_2;
+                    break;
+                case "FINAL":
+                    icon = R.drawable.ic_final_2;
+                    break;
+                case "VIVA":
+                    icon = R.drawable.ic_viva_2;
+                    break;
+                case "QUIZ":
+                    icon = R.drawable.ic_quiz_2;
+                    break;
+                default:
+                    icon = R.drawable.ic_error_2;
+                    break;
+            }
+            switch (datePart[0]) {
+                case "Mon":
+                    calendarIconList.add(new CalendarItem(11, documentSnapshot.getId(), icon));
+                    break;
+                case "Tue":
+                    calendarIconList.add(new CalendarItem(22, documentSnapshot.getId(), icon));
+                    break;
+                case "Wed":
+                    calendarIconList.add(new CalendarItem(33, documentSnapshot.getId(), icon));
+                    break;
+                case "Thu":
+                    calendarIconList.add(new CalendarItem(44, documentSnapshot.getId(), icon));
+                    break;
+                case "Fri":
+                    calendarIconList.add(new CalendarItem(55, documentSnapshot.getId(), icon));
+                    break;
+                case "Sat":
+                    calendarIconList.add(new CalendarItem(66, documentSnapshot.getId(), icon));
+                    break;
+                case "Sun":
+                    calendarIconList.add(new CalendarItem(77, documentSnapshot.getId(), icon));
+                    break;
+            }
+
+        }
     }
 
     @SuppressLint("SetTextI18n")

@@ -40,6 +40,7 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 Intent intentDashboard = new Intent(SplashActivity.this, DashboardActivity.class);
                 startActivity(intentDashboard);
+                finish();
             }
         }, 3000);
 
