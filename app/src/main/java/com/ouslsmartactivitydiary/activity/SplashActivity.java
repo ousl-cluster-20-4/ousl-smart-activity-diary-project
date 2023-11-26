@@ -46,6 +46,7 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
+    // this is for the type application name letters one by one in splash screen
     private void startTypingAnimation() {
         @SuppressLint("HandlerLeak") final Handler handler = new Handler() {
             @Override

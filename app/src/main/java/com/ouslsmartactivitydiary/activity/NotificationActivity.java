@@ -34,19 +34,19 @@ import java.util.List;
 
 public class NotificationActivity extends AppCompatActivity implements MyCalendarFragment.OnNotificationCountListener {
 
+    // Notification Recycler related variables
     RecyclerView recyclerViewNotification;
     List<NotificationItem> notificationList;
     NotificationAdapter notificationAdapter;
 
-    Cursor cursor, data;
+    // database related
+    Cursor cursor;
     DatabaseHelper databaseHelper;
-    int accountID;
 
     View optionLayout;
     TextView markAllAsRead, deleteAll;
     LinearLayout noCourseLinear, optionMenu;
     AlertDialog.Builder alertDialog;
-//    MyViewModel myViewModelNotification;
 
     private ImageView backIcon;
 
@@ -61,8 +61,8 @@ public class NotificationActivity extends AppCompatActivity implements MyCalenda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
 
-        actionBar = findViewById(R.id.myActionBar);
         //Change action bar title
+        actionBar = findViewById(R.id.myActionBar);
         textView = findViewById(R.id.title_actionbar);
         textView.setText("Notification");
 
@@ -100,6 +100,7 @@ public class NotificationActivity extends AppCompatActivity implements MyCalenda
             }
         });
 
+        // This can change the status of all notifications to "read" state
         markAllAsRead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,6 +142,8 @@ public class NotificationActivity extends AppCompatActivity implements MyCalenda
 
             }
         });
+
+        // This can delete all the notifications from the database
         deleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,6 +192,7 @@ public class NotificationActivity extends AppCompatActivity implements MyCalenda
                 decor.setSystemUiVisibility(0);
         }
 
+        // refresh the whole content
         initializeContent();
 
         // Reference the SwipeRefreshLayout from the layout
@@ -206,6 +210,7 @@ public class NotificationActivity extends AppCompatActivity implements MyCalenda
     @SuppressLint("NotifyDataSetChanged")
     private void initializeContent() {
 
+        // this sticker will display if there is no any notification
         noCourseLinear = findViewById(R.id.noCourseLinear);
 
         recyclerViewNotification = findViewById(R.id.recyclerNotification);
@@ -256,9 +261,6 @@ public class NotificationActivity extends AppCompatActivity implements MyCalenda
                     unread++;
                 }
             } while (cursor.moveToPrevious());
-            //send the count of unread notifications to home activity via view model
-//            myViewModelNotification = new ViewModelProvider(this).get(MyViewModel.class);
-//            myViewModelNotification.setNotificationCount(unread);
         }
     }
 
