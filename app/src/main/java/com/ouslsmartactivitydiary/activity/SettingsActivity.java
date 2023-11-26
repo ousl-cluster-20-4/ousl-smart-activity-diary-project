@@ -41,6 +41,7 @@ import java.util.concurrent.Executor;
 
 public class SettingsActivity extends AppCompatActivity implements AppearanceDialog.OnDismissListener {
 
+    // Action bar related variables
     private ImageView backIcon;
     private AppCompatTextView textView;
     private Toolbar actionBar;
@@ -108,6 +109,7 @@ public class SettingsActivity extends AppCompatActivity implements AppearanceDia
         appearanceLinear = findViewById(R.id.appearanceLinear);
         appearanceTopLinear = findViewById(R.id.appearanceTopLinear);
 
+        // this is for the initialize the content at the beginning
         initializeContent();
     }
 
@@ -141,6 +143,7 @@ public class SettingsActivity extends AppCompatActivity implements AppearanceDia
 
         appearanceList = new ArrayList<>();
 
+        // those are in the appearance section
         appearanceList.add(new AppearanceItem(1, R.drawable.ic_ds_2, "DS"));
         appearanceList.add(new AppearanceItem(1, R.drawable.ic_ps_2, "PS"));
         appearanceList.add(new AppearanceItem(1, R.drawable.ic_labtest_2, "LAB"));
@@ -153,6 +156,7 @@ public class SettingsActivity extends AppCompatActivity implements AppearanceDia
         appearanceAdapter = new AppearanceAdapter(this, appearanceList, new AppearanceAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(AppearanceItem position) {
+                // when clicking each appearance item appearance dialog will trigger
                 AppearanceDialog appearanceDialog = new AppearanceDialog(position);
                 appearanceDialog.setOnDismissListener(SettingsActivity.this);
                 appearanceDialog.show(getSupportFragmentManager(), "appearance_dialog");
@@ -210,6 +214,7 @@ public class SettingsActivity extends AppCompatActivity implements AppearanceDia
             }
         });
 
+        // appearance section
         appearanceTopLinear.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -277,6 +282,7 @@ public class SettingsActivity extends AppCompatActivity implements AppearanceDia
                 .setDescription("Authentication Required !").setDeviceCredentialAllowed(true).build();
 
         try {
+            // set the switch on
             mySwitchFingerprint.setChecked(true);
             biometricPrompt.authenticate(promptInfo);
         } catch (Exception e){
@@ -294,11 +300,12 @@ public class SettingsActivity extends AppCompatActivity implements AppearanceDia
         if (isUpdated) {
             Toast.makeText(SettingsActivity.this, "Fingerprint Disable", Toast.LENGTH_SHORT).show();
             isFingerprintOn = false;
+            // set the switch off
             mySwitchFingerprint.setChecked(false);
         }
     }
 
-
+    // this is for the rotate right arrow by 90 degrees
     private void startRotationAnimation(float from, float to) {
         // Create an ObjectAnimator for the rotation property
         ObjectAnimator rotateAnimator = ObjectAnimator.ofFloat(dropdownIcon, "rotation", from, to);

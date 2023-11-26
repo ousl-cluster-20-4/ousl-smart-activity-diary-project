@@ -61,10 +61,12 @@ public class MainActivity extends AppCompatActivity {
         mainConstraint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // while clicking the background, it will call to authenticate fingerprint again
                 biometricPrompt.authenticate(promptInfo);
             }
         });
 
+        // Firebase Messaging service works either application is not in the running state
         FirebaseMessaging.getInstance().subscribeToTopic("News")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -103,9 +105,11 @@ public class MainActivity extends AppCompatActivity {
         }
         cursor.close();
 
+        // save the default colors in colors table for the activities at the beginning
         saveColors();
     }
 
+    // method for the save default colors
     public void saveColors() {
         colorCursor = databaseHelper.getAllColors();
         if (colorCursor.getCount() == 0) {
@@ -183,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
         goSplash();
     }
 
+    // If authentication successful this method will trigger and go to Splash Screen
     protected void goSplash() {
         Intent splash = new Intent(this, SplashActivity.class);
         startActivity(splash);

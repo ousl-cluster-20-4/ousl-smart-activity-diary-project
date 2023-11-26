@@ -35,25 +35,24 @@ import com.ouslsmartactivitydiary.fragment.MyCalendarFragment;
 public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         MyCalendarFragment.OnNotificationCountListener, MyFirebaseMessagingService.DataCallback {
 
+    // Tab navigation related variables
     TabLayout tabLayout;
     ViewPager2 viewPager2;
     ViewPagerAdapter viewPagerAdapter;
 
     AppCompatTextView textView;
     private Toolbar actionBar;
+
+    // Drawer Navigation related variables
     private DrawerLayout drawerLayout;
     NavigationView navigationView;
 
-    MenuItem notificationIcon;
-    int notificationCount;
     View badgeLayout;
     TextView badgeCount;
 
     DatabaseHelper databaseHelper;
     Cursor itemsNotification, data;
-    int accountID;
 
-//    private MyViewModel myViewModelNotification;
     private static final int REQUEST_CODE = 1;
     private static final int REQUEST_CODE_SETTINGS = 2;
 
@@ -64,11 +63,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         setContentView(R.layout.activity_dashboard);
 
         MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService(this);
-
         databaseHelper = new DatabaseHelper(this);
 
-        actionBar = findViewById(R.id.myActionBar);
         //Change action bar title
+        actionBar = findViewById(R.id.myActionBar);
         textView = findViewById(R.id.title_actionbar);
         textView.setText("Dashboard");
 
@@ -97,6 +95,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 }
             } while (itemsNotification.moveToPrevious());
             badgeCount.setVisibility(View.VISIBLE);
+            // set the unread notification count at the beginning
             badgeCount.setText(String.valueOf(unread));
             if (unread == 0) {
                 badgeCount.setVisibility(View.GONE);
@@ -111,21 +110,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         }
         itemsNotification.close();
 
-//        myViewModelNotification = new ViewModelProvider(this).get(MyViewModel.class);
-
-        // Observe the myViewModelNotification LiveData object
-//        myViewModelNotification.getNotificationCount().observe(this, new Observer<Integer>() {
-//            @Override
-//            public void onChanged(Integer integer) {
-//                badgeCount.setText(String.valueOf(integer));
-//            }
-//        });
-
-
         // Find the menu item you want to add the badge to
         MenuItem notificationMenuItem = actionBar.getMenu().findItem(R.id.action_notification);
 
-        // Set the badge as the action view for the menu item
+        // Set the notification badge as the action view for the menu item
         notificationMenuItem.setActionView(badgeLayout);
         badgeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,6 +232,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 startActivity(intentAbout);
                 break;
         }
+        // close the drawer after 1 second
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -290,8 +279,9 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // Handle the result from the child activity
-                // You can access data from the Intent if the child activity passed any
+                // can access data from the Intent if the child activity passed any
                 String resultData = data.getStringExtra("key");
+                //This method is call for change the notification badge count
                 onNotificationCount();
                 // Process the resultData as needed
             } else if (resultCode == RESULT_CANCELED) {
@@ -299,6 +289,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             }
         }
 
+        // This will trigger only the color changes in appearance section
         if (requestCode == REQUEST_CODE_SETTINGS && data != null) {
             Toast.makeText(this, "Please refresh for color changes !", Toast.LENGTH_SHORT).show();
         }

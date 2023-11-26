@@ -24,11 +24,12 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        actionBar = findViewById(R.id.myActionBar);
         //Change action bar title
+        actionBar = findViewById(R.id.myActionBar);
         textView = findViewById(R.id.title_actionbar);
         textView.setText("About");
 
+        //Set manual back button in action bar left side
         backIcon = findViewById(R.id.backIcon);
         backIcon.setOnClickListener(new View.OnClickListener() {
             @Override

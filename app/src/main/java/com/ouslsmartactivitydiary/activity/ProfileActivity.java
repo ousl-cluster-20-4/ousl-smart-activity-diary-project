@@ -42,6 +42,7 @@ import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    // Action bar related private variables
     private ImageView backIcon;
     private AppCompatTextView textView;
     private Toolbar actionBar;
@@ -56,9 +57,9 @@ public class ProfileActivity extends AppCompatActivity {
     String strName, strRegNo, strSNumber, strEmail, strProgramme, strCenter, strPhone, strAddress;
     AppCompatButton editDetails;
     TextView userName,userEmail;
-    int accountID, profileCount;
-    String accountUserRegNo;
+    int profileCount;
 
+    // Degree programme related variables
     List<CourseItem> programmeList;
     RecyclerView recyclerCourseDialogProgrammes;
     CourseAdapter programmeAdapter;
@@ -66,7 +67,6 @@ public class ProfileActivity extends AppCompatActivity {
     //Firebase & local DB
     FirebaseFirestore firestore;
     CollectionReference collectionReference;
-
     DatabaseHelper databaseHelper;
     Cursor cursor;
 
@@ -77,8 +77,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        actionBar = findViewById(R.id.myActionBar);
         //Change action bar title
+        actionBar = findViewById(R.id.myActionBar);
         textView = findViewById(R.id.title_actionbar);
         textView.setText("Profile");
 
@@ -103,12 +103,14 @@ public class ProfileActivity extends AppCompatActivity {
                 decor.setSystemUiVisibility(0);
         }
 
+        // database initialization
         firestore = FirebaseFirestore.getInstance();
         databaseHelper = new DatabaseHelper(this);
 
         userName = findViewById(R.id.userName);
         userEmail = findViewById(R.id.userEmail);
 
+        // AppcompatButton
         editDetails = findViewById(R.id.editDetails);
 
         txtName = findViewById(R.id.txtName);
@@ -129,6 +131,7 @@ public class ProfileActivity extends AppCompatActivity {
         edtPhone = findViewById(R.id.edtPhone);
         edtAddress = findViewById(R.id.edtAddress);
 
+        // get the details from database for displaying at the beginning
         cursor = databaseHelper.getUserData(1);
         profileCount = cursor.getCount();
         if (profileCount != 0) {
@@ -141,6 +144,7 @@ public class ProfileActivity extends AppCompatActivity {
                 strCenter = cursor.getString(6);
                 strPhone = cursor.getString(7);
                 strAddress = cursor.getString(8);
+                // After calling this method user details are display in screen
                 displayProfile();
             }
         }
@@ -151,6 +155,7 @@ public class ProfileActivity extends AppCompatActivity {
         optionMenu.setVisibility(View.GONE);
         optionMenu.bringToFront();
 
+        // option for clear the all fields from profile details
         clearProfile = findViewById(R.id.clearProfile);
 
         // Find the menu item you want to add the badge to
@@ -219,6 +224,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        //AppcompatButton
         editDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -263,7 +269,9 @@ public class ProfileActivity extends AppCompatActivity {
                     if (!txtAddress.getText().equals("-    "))
                         edtAddress.setText(txtAddress.getText());
 
+                    // change the button text
                     editDetails.setText("Save Details");
+
                 } else if (editDetails.getText().equals("Save Details")) {
 
                     strName = String.valueOf(edtName.getText());
@@ -275,6 +283,7 @@ public class ProfileActivity extends AppCompatActivity {
                     strPhone = String.valueOf(edtPhone.getText());
                     strAddress = String.valueOf(edtAddress.getText());
 
+                    // If there have no any profile raw in the database table, this will insert a new sata raw, otherwise update previous one
                     if (profileCount == 0) {
                         boolean isInsert = databaseHelper.insertProfileDetails(strName, strRegNo, strSNumber, strEmail, strProgramme, strCenter, strPhone, strAddress);
                         if (isInsert) {
@@ -302,6 +311,7 @@ public class ProfileActivity extends AppCompatActivity {
         recyclerCourseDialogProgrammes = findViewById(R.id.recyclerCourseDialogProgrammes);
         programmeList = new ArrayList<>();
 
+        // This is for get when touch the edit text view of the "programme"
         edtProgramme.setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -329,6 +339,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+    // get degree names from firebase
     public void getProgrammeDocuments() {
         programmeList.clear();
         collectionReference = firestore.collection("courses");
@@ -431,6 +442,7 @@ public class ProfileActivity extends AppCompatActivity {
         edtPhone.setVisibility(View.GONE);
         edtAddress.setVisibility(View.GONE);
 
+        // change the button text
         editDetails.setText("Edit Details");
     }
 

@@ -46,6 +46,7 @@ import java.util.Map;
 
 public class StaffActivity extends AppCompatActivity {
 
+    // Action bar related private variables
     private ImageView backIcon;
     private AppCompatTextView textView;
     private Toolbar actionBar;
@@ -162,6 +163,7 @@ public class StaffActivity extends AppCompatActivity {
                         public void onItemClick(CourseItem position) {
                             editTextCourse.setText((position.getCourseCode()+" - "+position.getCourseName()));
                             recyclerAddedCourseLoad.setVisibility(View.GONE);
+                            // load the staff members according to the selected course code
                             loadAllStaff(position.getCourseCode());
                         }
                     });
@@ -174,6 +176,7 @@ public class StaffActivity extends AppCompatActivity {
         });
     }
 
+    // This will get all the courses student has added
     public void getAddedCourses() {
         cursor = databaseHelper.getAllCourses();
         while (cursor.moveToNext()) {
@@ -181,8 +184,10 @@ public class StaffActivity extends AppCompatActivity {
         }
     }
 
+    // load the all staff members at the beginning and refreshing
     public void loadAllStaff(String cc) {
 
+        // set the progress bar visible
         progressBar.setVisibility(View.VISIBLE);
 
         collectionReference = firestore.collection("academicStaff");
@@ -196,9 +201,11 @@ public class StaffActivity extends AppCompatActivity {
 
                                 String name = documentSnapshot.getString("name");
                                 String email = documentSnapshot.getString("email");
+                                // get the key and value those assign into each staff member
                                 Map<String, String> coursesData = (Map<String, String>) documentSnapshot.get("courses");
 
                                 if (coursesData != null) {
+                                    // this is use for bind all the key value pairs to one string
                                     StringBuilder resultStringBuilder = new StringBuilder();
                                     for (Map.Entry<String, String> entry : coursesData.entrySet()) {
                                         String key = entry.getKey();
@@ -208,6 +215,7 @@ public class StaffActivity extends AppCompatActivity {
                                     }
                                     String resultString = resultStringBuilder.toString();
 
+                                    // this is used when the displaying all the staff members before filtering by course wise
                                     if (cc.equals("")) {
                                         staffItemList.add(new StaffItem(documentSnapshot.getId(), name, email, resultString));
                                     } else {
