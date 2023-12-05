@@ -252,6 +252,17 @@ public class ProfileActivity extends AppCompatActivity {
                     edtPhone.setVisibility(View.VISIBLE);
                     edtAddress.setVisibility(View.VISIBLE);
 
+                    strName = String.valueOf(edtName.getText());
+                    strRegNo = String.valueOf(edtRegNo.getText());
+                    strSNumber = String.valueOf(edtSNumber.getText());
+                    strEmail = String.valueOf(edtEmail.getText());
+                    strProgramme = String.valueOf(edtProgramme.getText());
+                    strCenter = String.valueOf(edtCenter.getText());
+                    strPhone = String.valueOf(edtPhone.getText());
+                    strAddress = String.valueOf(edtAddress.getText());
+
+                    checkFields();
+
                     if (!txtName.getText().equals("-    "))
                         edtName.setText(txtName.getText());
                     if (!txtRegNo.getText().equals("-    "))
@@ -283,25 +294,33 @@ public class ProfileActivity extends AppCompatActivity {
                     strPhone = String.valueOf(edtPhone.getText());
                     strAddress = String.valueOf(edtAddress.getText());
 
-                    // If there have no any profile raw in the database table, this will insert a new sata raw, otherwise update previous one
-                    if (profileCount == 0) {
-                        boolean isInsert = databaseHelper.insertProfileDetails(strName, strRegNo, strSNumber, strEmail, strProgramme, strCenter, strPhone, strAddress);
-                        if (isInsert) {
-                            displayProfile();
-                            Toast.makeText(ProfileActivity.this, "Details saved", Toast.LENGTH_SHORT).show();
+                    if (checkFields()) {
+
+                        // If there have no any profile raw in the database table, this will insert a new sata raw, otherwise update previous one
+                        if (profileCount == 0) {
+                            boolean isInsert = databaseHelper.insertProfileDetails(strName, strRegNo, strSNumber, strEmail, strProgramme, strCenter, strPhone, strAddress);
+                            if (isInsert) {
+                                displayProfile();
+                                Toast.makeText(ProfileActivity.this, "Details saved", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ProfileActivity.this, "Details not saved !", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
-                            Toast.makeText(ProfileActivity.this, "Details not saved !", Toast.LENGTH_SHORT).show();
+                            boolean isUpdate = databaseHelper.updateProfileDetails(1, strName, strRegNo, strSNumber, strEmail, strProgramme, strCenter, strPhone, strAddress);
+                            if (isUpdate) {
+                                displayProfile();
+                                Toast.makeText(ProfileActivity.this, "Details updated", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ProfileActivity.this, "Details not update !", Toast.LENGTH_SHORT).show();
+                            }
                         }
+                        recyclerCourseDialogProgrammes.setVisibility(View.GONE);
+
                     } else {
-                        boolean isUpdate = databaseHelper.updateProfileDetails(1, strName, strRegNo, strSNumber, strEmail, strProgramme, strCenter, strPhone, strAddress);
-                        if (isUpdate) {
-                            displayProfile();
-                            Toast.makeText(ProfileActivity.this, "Details updated", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ProfileActivity.this, "Details not update !", Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(ProfileActivity.this, "Please fill compulsory fields", Toast.LENGTH_SHORT).show();
                     }
-                    recyclerCourseDialogProgrammes.setVisibility(View.GONE);
+
+
 
                 }
                 cursor.close();
@@ -336,7 +355,6 @@ public class ProfileActivity extends AppCompatActivity {
                 return false;
             }
         });
-
     }
 
     // get degree names from firebase
@@ -444,6 +462,31 @@ public class ProfileActivity extends AppCompatActivity {
 
         // change the button text
         editDetails.setText("Edit Details");
+    }
+
+    @SuppressLint("ResourceAsColor")
+    public boolean checkFields() {
+        if (strName.equals("") || strEmail.equals("") ||
+                strRegNo.equals("") || strSNumber.equals("") || strProgramme.equals("")) {
+            if (strName.equals("")) {
+                edtName.setHintTextColor(getResources().getColor(R.color.Red));
+            }
+            if (strEmail.equals("")) {
+                edtEmail.setHintTextColor(getResources().getColor(R.color.Red));
+            }
+            if (strRegNo.equals("")) {
+                edtRegNo.setHintTextColor(getResources().getColor(R.color.Red));
+            }
+            if (strSNumber.equals("")) {
+                edtSNumber.setHintTextColor(getResources().getColor(R.color.Red));
+            }
+            if (strProgramme.equals("")) {
+                edtProgramme.setHintTextColor(getResources().getColor(R.color.Red));
+            }
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override
