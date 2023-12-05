@@ -74,6 +74,7 @@ public class AppearanceDialog extends AppCompatDialogFragment {
 
         recyclerViewColors = view.findViewById(R.id.recyclerViewColors);
         appearanceColorsList = new ArrayList<>();
+        // add colors to the color plate
         addColors();
 
         appearanceIcon = view.findViewById(R.id.appearanceIcon);
@@ -90,20 +91,16 @@ public class AppearanceDialog extends AppCompatDialogFragment {
 
                 progressBar.setVisibility(View.VISIBLE);
                 databaseHelper.updateColorValueByName(itemPosition.getAppearanceName(), position.getColor());
-//                addColors();
-//                previous.setState(0);
-                previous.setState(0); // update new color state as 1
+                previous.setState(0); // set previous color state to 0
                 previous = position;
-                position.setState(1);
+                position.setState(1); // update new color state as 1
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-//                        appearanceAdapter.notifyDataSetChanged();
                         appearanceAdapter.notifyDataSetChanged();
                         progressBar.setVisibility(View.GONE);
                     }
                 }, 1000);
-//                previous = position;
 
             }
         });
@@ -122,6 +119,8 @@ public class AppearanceDialog extends AppCompatDialogFragment {
                 for (int i=0; i<appearanceColorsList.size(); i++) {
                     if (appearanceColorsList.get(i).getColor() == defaultColor) {
                         appearanceColorsList.get(i).setState(1);
+                        // set the active color position
+                        previous = appearanceColorsList.get(i);
                     } else {
                         appearanceColorsList.get(i).setState(0);
                     }
@@ -142,6 +141,7 @@ public class AppearanceDialog extends AppCompatDialogFragment {
         return builder.create();
     }
 
+    // add colors to the color plate
     public void addColors() {
         appearanceColorsList.clear();
         appearanceColorsList.add(new AppearanceItem(2, 0, 1, getResources().getColor(R.color.DarkBlue)));

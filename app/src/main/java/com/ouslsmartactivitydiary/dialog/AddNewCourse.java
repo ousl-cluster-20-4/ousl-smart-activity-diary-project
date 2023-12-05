@@ -86,15 +86,19 @@ public class AddNewCourse extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.add_new_course, null);
 
+        // data
         firestore = FirebaseFirestore.getInstance();
         databaseHelper = new DatabaseHelper(getContext());
 
+        // courses
         recyclerCourseDialog = view.findViewById(R.id.recyclerCourseDialog);
         courseItemList = new ArrayList<>();
 
+        // programme names
         recyclerCourseDialogProgrammes = view.findViewById(R.id.recyclerCourseDialogProgrammes);
         programmeList = new ArrayList<>();
 
+        // levels
         recyclerCourseDialogLevels = view.findViewById(R.id.recyclerCourseDialogLevels);
         levelsList = new ArrayList<>();
 
@@ -105,6 +109,7 @@ public class AddNewCourse extends AppCompatDialogFragment {
         buttonAdd.setEnabled(false);
         buttonAdd.setBackgroundColor(Color.GRAY);
 
+        // edit text of select programme name
         editTextDegree.setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -161,6 +166,7 @@ public class AddNewCourse extends AppCompatDialogFragment {
             }
         });
 
+        // edit text of select level
         editTextAcademicLevel.setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -214,6 +220,7 @@ public class AddNewCourse extends AppCompatDialogFragment {
             }
         });
 
+        // search button
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -257,12 +264,14 @@ public class AddNewCourse extends AppCompatDialogFragment {
         return builder.create();
     }
 
+    // load courses related to edit text fields
     public void loadCourses() {
         progressBar.setVisibility(View.VISIBLE);
         courseItemList.clear();
 
         cursor = databaseHelper.getAllCourses();
 
+        // fetch courses from firebase
         for (String category : arrayCategories) {
             collectionReference = firestore.collection("courses").document(programmeDocID)
                     .collection(category);
@@ -311,6 +320,7 @@ public class AddNewCourse extends AppCompatDialogFragment {
 
     }
 
+    // display the existing programs in firebase
     public void getProgrammeDocuments() {
         progressBar.setVisibility(View.VISIBLE);
         programmeList.clear();
@@ -384,6 +394,7 @@ public class AddNewCourse extends AppCompatDialogFragment {
                 });
     }
 
+    // add selected course to My Course section
     @SuppressLint("NotifyDataSetChanged")
     public void addCourseFromDialog(CourseItem position) {
         boolean isCourseAdd = databaseHelper.insertCourse(position.getCourseCode(), position.getCourseName());
